@@ -1,0 +1,26 @@
+
+
+
+double f(double x, double y, double z){
+}
+
+derv(0) double f(double x, double y, double z){
+}
+
+derv(1) double f(double x, double y, double z){
+}
+
+derv(2) double f(double x, double y, double z){
+}
+
+
+double g(x,y,z);
+
+derv(0) double g()
+
+
+int main(){
+
+	dg = derv(0,g)(x,y,z)
+
+}
