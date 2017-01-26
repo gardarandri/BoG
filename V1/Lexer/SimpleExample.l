@@ -1,16 +1,18 @@
 
 %{
-#include "stdio.h"
+#include <stdio.h>
+
+int linenum = 2;
 %}
 
 /* Here we put definitions */
 
-DIGIT	[0-9]
-NUMBER	{DIGIT}+
-DELIM	[^0-9]
 
 %%
 
-{NUMBER}	{}
+if			printf("IF");
+else		printf("ELSE");
+" "		printf(" space ");
+\n			printf("~newline~\n%d. ", linenum++);
 
 %%
