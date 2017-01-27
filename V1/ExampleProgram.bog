@@ -1,0 +1,14 @@
+
+
+float my_func(const float x){
+	return x*x + 100.0;
+}
+
+
+int main(){
+	int lalli= 24021;
+	if(lalli > 193 || lalli == 0){
+		printf("Hallo ballo");
+	}
+	printf(10.0403e-59);
+}
