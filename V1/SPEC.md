@@ -13,6 +13,20 @@ The language has the following keywords:
 * const
 * TODO: Er þetta fullkominn listi?
 
+The following characters are reserved for special use:
+
+* +
+* -
+* \*
+* /
+* {
+* }
+* (
+* )
+* ;
+* =
+* "
+
 Integer constants which the compiler understands follow the regular expression:
 
 > \[0-9\]+
