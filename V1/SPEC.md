@@ -25,6 +25,9 @@ Boolean constants which the compiler understands follow the regular expression:
 
 > (true)|(false)
 
+Names follow the following regular expression:
+
+> \[a-zA-Z\]\[a-zA-Z0-9_\]*
 
 TODO: Add context-free specification for expressions, if's, for's, while's etc
 
