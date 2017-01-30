@@ -66,15 +66,19 @@ BOG_ERROR
 #endif
 %}
 
-WS			[ \t\n\r\f]
-INTEGER		[0-9]+
-FLOAT		[0-9]+\.[0-9]+([Ee][+-]?[0-9]+)?
-BOOLEAN		(true)|(false)
-NAME		[a-zA-Z_][a-zA-Z0-9_]*
+WS				[ \t\n\r\f]
+INTEGER			[0-9]+
+FLOAT			[0-9]+\.[0-9]+([Ee][+-]?[0-9]+)?
+BOOLEAN			(true)|(false)
+NAME			[a-zA-Z_][a-zA-Z0-9_]*
+COMMENT			\/\/.*\n
+BLOCKCOMMENT	\/\*(.|\n)*\*\/
 
 %%
 
-{WS}		/* Do nothing */
+{COMMENT}		/* Do nothing */
+{BLOCKCOMMENT}	/* Do nothing */
+{WS}			/* Do nothing */
 
 int			BOG_KEYWORD(BOG_INT)
 float		BOG_KEYWORD(BOG_FLOAT)
