@@ -10,11 +10,10 @@ float my_func(const float x, bool r){
 
 float d_my_func(const float x, bool r) = DERV(my_func,0);
 
-
 int main(){
 	int lalli= 24021;
 	if(lalli > 193 || lalli == 0){
-		printf("Hallo ballo");
+		printf("Hallo ballo\n");
 	}
 	printf(10.0403e-59);
 

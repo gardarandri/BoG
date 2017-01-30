@@ -22,6 +22,7 @@ BOG_HASH,
 BOG_ASSIGN,
 BOG_PERIOD,
 BOG_COMMA,
+BOG_BACKSLASH,
 BOG_PLUS,
 BOG_MINUS,
 BOG_MULT,
@@ -44,7 +45,8 @@ BOG_MOD_ASSIGN,
 BOG_INCREMENTOR,
 BOG_DECREMENTER,
 
-BOG_NAME_ENUM
+BOG_NAME_ENUM,
+BOG_ERROR
 };
 
 #ifdef BOG_DEBUG
@@ -53,12 +55,14 @@ BOG_NAME_ENUM
 	#define BOG_OPERATOR(E) printf(#E); printf(" %s\n",yytext);
 	#define BOG_LITERALS(E) printf(#E); printf(" %s\n",yytext);
 	#define BOG_NAME(E) printf(#E); printf(" %s\n",yytext);
+	#define BOG_REPORT printf("Found unrecognized token: %s\n",yytext); exit(BOG_ERROR);
 #else
 	#define BOG_KEYWORD(E) return E;
 	#define BOG_SPECIAL_CHAR(E) return E;
 	#define BOG_OPERATOR(E) return E;
 	#define BOG_LITERALS(E) return E;
 	#define BOG_NAME(E) return E;
+	#define BOG_REPORT return BOG_ERROR;
 #endif
 %}
 
@@ -66,7 +70,7 @@ WS			[ \t\n\r\f]
 INTEGER		[0-9]+
 FLOAT		[0-9]+\.[0-9]+([Ee][+-]?[0-9]+)?
 BOOLEAN		(true)|(false)
-NAME		[a-zA-Z][a-zA-Z0-9_]*
+NAME		[a-zA-Z_][a-zA-Z0-9_]*
 
 %%
 
@@ -95,6 +99,7 @@ DERV		BOG_KEYWORD(BOG_DERV)
 "="			BOG_SPECIAL_CHAR(BOG_ASSIGN)
 "."			BOG_SPECIAL_CHAR(BOG_PERIOD)
 ","			BOG_SPECIAL_CHAR(BOG_COMMA)
+"\\"		BOG_SPECIAL_CHAR(BOG_BACKSLASH)
 
 
 "+"			BOG_OPERATOR(BOG_PLUS)
@@ -126,6 +131,7 @@ DERV		BOG_KEYWORD(BOG_DERV)
 
 {NAME}		BOG_NAME(BOG_NAME)
 
+.			BOG_REPORT
 
 
 
