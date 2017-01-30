@@ -11,21 +11,33 @@ The language has the following keywords:
 * else
 * while (Gera þetta?)
 * const
+* DERV
 * TODO: Er þetta fullkominn listi?
 
 The following characters are reserved for special use:
 
-* +
-* -
-* \*
-* /
 * {
 * }
 * (
 * )
 * ;
-* =
 * "
+* #
+* =
+
+The following operators:
+
+* +
+* -
+* \*
+* /
+* ||
+* &&
+* ==
+* <
+* >
+* <=
+* >=
 
 Integer constants which the compiler understands follow the regular expression:
 
@@ -41,7 +53,7 @@ Boolean constants which the compiler understands follow the regular expression:
 
 Names follow the following regular expression:
 
-> \[a-zA-Z\]\[a-zA-Z0-9_\]*
+> \[a-zA-Z\_\]\[a-zA-Z0-9\_\]\*
 
 TODO: Add context-free specification for expressions, if's, for's, while's etc
 
