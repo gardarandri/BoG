@@ -20,7 +20,10 @@ The following characters are reserved for special use:
 * }
 * (
 * )
+* [
+* ]
 * ;
+* :
 * "
 * #
 * =
@@ -31,13 +34,23 @@ The following operators:
 * -
 * \*
 * /
+* %
 * ||
 * &&
 * ==
+* !=
+* !
 * <
 * >
 * <=
 * >=
+* +=
+* -=
+* \*=
+* /=
+* %=
+* ++
+* --
 
 Integer constants which the compiler understands follow the regular expression:
 
