@@ -1,3 +1,0 @@
-
-%%
-username    printf( "%s", "Garðar" );
