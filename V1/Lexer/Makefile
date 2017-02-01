@@ -1,16 +1,17 @@
 FLPATH = "C:\Program Files (x86)\GnuWin32\lib"
 LDFLAGS = -lfl
+EXAMPLEPATH = "..\ExampleProgram.bog"
 
 default: compileLexer
-	gcc -L$(FLPATH)  -o BoG_Lexer lex.yy.c -D BOG_DEBUG $(LDFLAGS)
+	gcc -L$(FLPATH)  -o BoG_Lexer BoG_Lexer.c -D BOG_DEBUG $(LDFLAGS)
 
 compileLexer:
-	flex BoG_Lexer.l
+	flex -oBog_Lexer.c BoG_Lexer.l
 
 test: default
-	BoG_Lexer < ..\ExampleProgram.bog
+	BoG_Lexer < $(EXAMPLEPATH)
 
 clean:
-	del lex.yy.c BoG_Lexer.exe
+	del BoG_Lexer.cpp BoG_Lexer.exe
 
 
