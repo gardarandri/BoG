@@ -1,61 +1,58 @@
 
 %{
-enum bog_tokens{
-BOG_INT,
-BOG_FLOAT,
-BOG_BOOL,
-BOG_IF,
-BOG_ELSE,
-BOG_WHILE,
-BOG_CONST,
-BOG_DERV,
-BOG_O_CURLY,
-BOG_C_CURLY,
-BOG_O_PARAN,
-BOG_C_PARAN,
-BOG_O_BRACKET,
-BOG_C_BRACKET,
-BOG_SEMICOLON,
-BIG_COLON,
-BOG_QUOTE,
-BOG_HASH,
-BOG_ASSIGN,
-BOG_PERIOD,
-BOG_COMMA,
-BOG_BACKSLASH,
-BOG_PLUS,
-BOG_MINUS,
-BOG_MULT,
-BOG_DIV,
-BIG_MOD,
-BOG_OR,
-BOG_AND,
-BOG_EQ,
-BOG_NEQ,
-BOG_NOT,
-BOG_LE,
-BOG_GE,
-BOG_LEQ,
-BOG_GEQ,
-BOG_PLUS_ASSIGN,
-BOG_MINUS_ASSIGN,
-BOG_MULT_ASSIGN,
-BOG_DIV_ASSIGN,
-BOG_MOD_ASSIGN,
-BOG_INCREMENTOR,
-BOG_DECREMENTER,
-
-BOG_NAME_ENUM,
-BOG_ERROR
-};
+#define BOG_INT 1000
+#define BOG_FLOAT 1001
+#define BOG_BOOL 1002
+#define BOG_IF 1003
+#define BOG_ELSE 1004
+#define BOG_WHILE 1005
+#define BOG_CONST 1006
+#define BOG_DERV 1007
+#define BOG_O_CURLY 1008
+#define BOG_C_CURLY 1009
+#define BOG_O_PARAN 1010
+#define BOG_C_PARAN 1011
+#define BOG_O_BRACKET 1012
+#define BOG_C_BRACKET 1013
+#define BOG_SEMICOLON 1014
+#define BIG_COLON 1015
+#define BOG_QUOTE 1016
+#define BOG_HASH 1017
+#define BOG_ASSIGN 1018
+#define BOG_PERIOD 1019
+#define BOG_COMMA 1020
+#define BOG_BACKSLASH 1021
+#define BOG_PLUS 1022
+#define BOG_MINUS 1023
+#define BOG_MULT 1024
+#define BOG_DIV 1025
+#define BIG_MOD 1026
+#define BOG_OR 1027
+#define BOG_AND 1028
+#define BOG_EQ 1029
+#define BOG_NEQ 1030
+#define BOG_NOT 1031
+#define BOG_LE 1032
+#define BOG_GE 1033
+#define BOG_LEQ 1034
+#define BOG_GEQ 1035
+#define BOG_PLUS_ASSIGN 1036
+#define BOG_MINUS_ASSIGN 1037
+#define BOG_MULT_ASSIGN 1038
+#define BOG_DIV_ASSIGN 1039
+#define BOG_MOD_ASSIGN 1040
+#define BOG_INCREMENTOR 1041
+#define BOG_DECREMENTER 1042
+#define BOG_NAME_ENUM 1043
+#define BOG_ERROR (-1)
 
 #ifdef BOG_DEBUG
-	#define BOG_KEYWORD(E) printf(#E); printf(" %s\n",yytext);
-	#define BOG_SPECIAL_CHAR(E) printf(#E); printf(" %s\n",yytext);
-	#define BOG_OPERATOR(E) printf(#E); printf(" %s\n",yytext);
-	#define BOG_LITERALS(E) printf(#E); printf(" %s\n",yytext);
-	#define BOG_NAME(E) printf(#E); printf(" %s\n",yytext);
-	#define BOG_REPORT printf("Found unrecognized token: %s\n",yytext); exit(BOG_ERROR);
+	#define BOG_KEYWORD(E) printf(#E); printf(" '%s'\n",yytext);
+	#define BOG_SPECIAL_CHAR(E) printf(#E); printf(" '%s'\n",yytext);
+	#define BOG_OPERATOR(E) printf(#E); printf(" '%s'\n",yytext);
+	#define BOG_LITERALS(E) printf(#E); printf(" '%s'\n",yytext);
+	#define BOG_NAME(E) printf(#E); printf(" '%s'\n",yytext);
+	#define BOG_REPORT printf("Found unrecognized token: '%s'\n",yytext); exit(BOG_ERROR);
 #else
 	#define BOG_KEYWORD(E) return E;
 	#define BOG_SPECIAL_CHAR(E) return E;
