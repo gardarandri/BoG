@@ -9,8 +9,14 @@ default: compileLexer
 compileLexer:
 	flex -o$(FLEXGENFILE) BoG_Lexer.l
 
-test: default
+debug: default
 	BoG_Lexer < $(EXAMPLEPATH)
+
+build: clean compileLexer
+	gcc -L$(FLPATH)  -o BoG_Lexer -DYY_MAIN=0 BoG_Lexer.c $(LDFLAGS)
+
+test: build
+	BoG_Lexer.exe < ExampleProgram.bog
 
 clean:
 	del $(FLEXGENFILE) BoG_Lexer.exe
