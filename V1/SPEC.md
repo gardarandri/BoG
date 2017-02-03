@@ -11,6 +11,7 @@ The language has the following keywords:
 * else
 * while (Gera þetta?)
 * const
+* return
 * DERV
 * TODO: Er þetta fullkominn listi?
 
