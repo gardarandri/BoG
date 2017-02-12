@@ -48,6 +48,7 @@ Names follow the following regular expression:
 
 The following EBNF is the syntax spesification
 
+~~~~
 program 	= fundcel , ";" , program
 			| vardecl , ";" , program
 			| expr , ";" , program
@@ -124,3 +125,4 @@ innerbodyt	= ""
 			| funcdecl , ";" , innerbodyt
 			| vardecl , ";" , innerbodyt
 			| expr , ";" , innerbodyt
+~~~~
