@@ -1,2 +1,2 @@
 # BoG
-Programming language made for TÖL202 in the University of Iceland
+A MicroMorpho implementation made for TÖL202 in the University of Iceland.
