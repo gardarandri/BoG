@@ -47,6 +47,3 @@ int advance_over(char* targ){
 
 	return current_token;
 }
-
-int main(){
-}
