@@ -1,6 +1,9 @@
+#include "BoG_Lexer.h"
 
 #define BOG_MATCH 5
-#define BOG_NO_MATCH 5
+#define BOG_NO_MATCH 6
+
+//TODO: Beytta í nanomorpho
 
 //program 	= fundcel , ";" , program
 //			| vardecl , ";" , program
@@ -19,37 +22,30 @@ int program(){
 
 
 //fundecl		= "fun" , NAME , "(" , args , ")" , body
-int fundecl(){
-	if(current_token != BOG_FUN){
-		printf("Error!");
-	}
-	advance();
+void fundecl(){
+	advance_over(BOG_FUN);
+	advance_over(BOG_NAME_ENUM);
+	advance_over("(");
 
-	if(current_token != BOG_NAME){
-		printf("Error!");
-	}
-	advance();
+	args();
 
-	if(advance_over("(") == BOG_ERROR) return BOG_NO_MATCH;
+	advance_over(")");
 
-	if(args() == BOG_NO_MATCH) return BOG_NO_MATCH;
-
-	if(advance_over(")") == BOG_ERROR) return BOG_NO_MATCH;
-
-	if(body() == BOG_NO_MATCH) return BOG_NO_MATCH;
-
-	return BOG_MATCH;
+	body();
 }
 
 //args		= "" 
 //			| NAME 
 //			| NAME , "," , args
 int args(){
-	while(current_token == BOG_NAME_ENUM){
+	if(current_token != BOG_NAME_ENUM) return BOG_MATCH;
+
+	advance_over(BOG_NAME_ENUM);
+
+	while(current_token == (int)','){
 		advance();
 
-		if(lexeme_equals(",")) advance_over(",");
-		else break;
+		advance_over(BOG_NAME_ENUM);
 	}
 
 	return BOG_MATCH;
@@ -57,6 +53,7 @@ int args(){
 
 //vardecl		= "var" , vdt1
 int vardecl(){
+	advance_over("var");
 	if(current_token != BOG_VAR) return BOG_NO_MATCH;
 	
 	return vdt1();
@@ -162,6 +159,8 @@ int ifexprt2(){
 
 //body		= "{" , innerbody , "}"
 int body(){
+	vardecl();
+	expr();
 }
 
 //innerbody	= funcdecl , ";" , innerbodyt
@@ -175,4 +174,12 @@ int innerbody(){
 //			| vardecl , ";" , innerbodyt
 //			| expr , ";" , innerbodyt
 int innerbodyt(){
+}
+
+int main(){
+	try{
+		program
+	}catch(error){
+		printf();
+	}
 }
