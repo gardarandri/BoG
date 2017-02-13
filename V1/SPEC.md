@@ -49,80 +49,25 @@ Names follow the following regular expression:
 The following EBNF is the syntax spesification
 
 ~~~~
-program 	= fundcel , ";" , program
-			| vardecl , ";" , program
-			| expr , ";" , program
+program 	= function , program
+			| function
 
+function	= NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";" } , "}"
 
-fundecl		= "fun" , NAME , "(" , args , ")" , body
+decl		= "var" , NAME , { NAME }
 
-args		= "" 
-			| NAME 
-			| NAME , "," , args
-
-vardecl		= "var" , vdt
-
-vdt1 		= NAME , vdt2
-
-vdt2		= "=" , expr , vdt3
-
-vdt3		= ""
-			| "," , vdt1
-
-expr		= "return" , expr
+expr		= NAME
 			| NAME , "=" , expr
-			| orexpr
-
-orexpr		= andexpr , orexprt
-
-orexpr1		= "||" , orexpr
-			| ""
-
-andexpr		= notexpr , andexprt
-
-andexprt	= "&&" , andexpr
-			| ""
-
-notexpr		= "!" , notexpr
-			| opexpr
-
-opexpr		= smallexpr , opexprt
-
-opexprt		= OPNAME , opexpr
-			| ""
-
-smallexpr	= NAME , smallexprn
+			| NAME , "(" , [ expr , { "," , expr } ] , ")"
+			| "return" , expr
 			| OPNAME , expr
+			| expr OPNAME expr
 			| LITERAL
 			| "(" , expr , ")"
 			| ifexpr
 			| "while" , "(" , expr , ")" , body
-			| fundecl
 
-smallexprn	= ""
-			| "(" , manyexpr , ")"
+ifexpr		= "if" , "(" , expr , ")" , body , [ "elsif" , "(" , expr , ")" , body ] , [ "else" , body ]
 
-manyexpr	= expr , manyexprt
-
-manyexprt	= "," , manyexpr
-			| ""
-
-ifexpr		= "if" , "(" , expr , ")" , body , ifexprt1
-
-ifexprt1	= ""
-			| "elseif" , "(" , expr , ")" , body , ifexprt2
-
-ifexprt2	= ""
-			| "else" , body
-
-body		= "{" , innerbody , "}"
-
-innerbody	= funcdecl , ";" , innerbodyt
-			| vardecl , ";" , innerbodyt
-			| expr , ";" , innerbodyt
-
-innerbodyt	= ""
-			| funcdecl , ";" , innerbodyt
-			| vardecl , ";" , innerbodyt
-			| expr , ";" , innerbodyt
+body		= "{" , expr , ";" , { expr , ";" } , "}"
 ~~~~
