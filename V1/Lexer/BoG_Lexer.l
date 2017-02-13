@@ -14,6 +14,7 @@
 #define BOG_STRING 1011
 #define BOG_NAME_ENUM 1012
 #define BOG_ERROR (-1)
+#define BOG_EOF 0
 
 #ifdef BOG_DEBUG
 	#define BOG_KEYWORD(E) printf(#E); printf(" '%s'\n",yytext);
