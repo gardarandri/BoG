@@ -1,23 +1,20 @@
 
 
-float my_func(const float x, bool r){
+fun my_func(var x, var r){
 	if(r){
 		return x*x + 100.0;
 	}else{
 		return x + exp(x);
-	}
-}
+	};
+};
 
-// This is my_func differentiated with respect to x
-float d_my_func(const float x, bool r) = DERV(my_func,0);
+;;; This is my_func differentiated with respect to x
+fun d_my_func(var x, var r){
+	return x+r;
+};
 
-/*
-The main function is where the program starts execution
-:)
-*/
-
-int main(){
-	int lalli= 24021;
+fun main(){
+	var lalli= 24021;
 	if(lalli > 193 || lalli == 0){
 		printf("Hallo ballo\n");
 	}
@@ -26,4 +23,4 @@ int main(){
 	lalli++;
 
 	lalli -= 1000394;
-}
+};
