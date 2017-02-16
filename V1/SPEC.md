@@ -67,7 +67,7 @@ expr		= NAME
 			| ifexpr
 			| "while" , "(" , expr , ")" , body
 
-ifexpr		= "if" , "(" , expr , ")" , body , [ "elsif" , "(" , expr , ")" , body ] , [ "else" , body ]
+ifexpr		= "if" , "(" , expr , ")" , body , [ "elif" , "(" , expr , ")" , body ] , [ "else" , body ]
 
 body		= "{" , expr , ";" , { expr , ";" } , "}"
 ~~~~

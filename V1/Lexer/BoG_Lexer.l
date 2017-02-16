@@ -3,16 +3,17 @@
 #define BOG_VAR 1000
 #define BOG_IF 1001
 #define BOG_ELSE 1002
-#define BOG_WHILE 1003
-#define BOG_RETURN 1004
-#define BOG_FUN 1005
-#define BOG_DELIMITER 1006
-#define BOG_OP 1007
-#define BOG_INT 1008
-#define BOG_FLOAT 1009
-#define BOG_BOOLEAN 1010
-#define BOG_STRING 1011
-#define BOG_NAME_ENUM 1012
+#define BOG_ELIF 1003
+#define BOG_WHILE 1004
+#define BOG_RETURN 1005
+#define BOG_FUN 1006
+#define BOG_DELIMITER 1007
+#define BOG_OP 1008
+#define BOG_INT 1009
+#define BOG_FLOAT 1010
+#define BOG_BOOLEAN 1011
+#define BOG_STRING 1012
+#define BOG_NAME_ENUM 1013
 #define BOG_ERROR (-1)
 #define BOG_EOF 0
 
