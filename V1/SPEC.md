@@ -52,7 +52,7 @@ The following EBNF is the syntax spesification
 program 	= function , program
 			| function
 
-function	= NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";" } , "}"
+function	= "fun" , NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";" } , "}"
 
 decl		= "var" , NAME , { NAME }
 

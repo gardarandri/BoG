@@ -8,7 +8,7 @@
 int current_token;
 
 void throw_error(char* expected_token){
-	printf("Expected '%s' but found '%s'\n",expected_token,yytext);
+	printf("line %d: Expected '%s' but found '%s'\n",lexer_at_line,expected_token,yytext);
 	exit(0);
 }
 
@@ -33,22 +33,26 @@ int lexeme_equals(char* query){
 }
 
 int advance(){
+#ifdef LEXER_DEBUG
+	printf("walking over: ");
+	printf("%s",yytext);
+	printf("\n");
+#endif
+
 	current_token = yylex();
 
 	if(current_token == BOG_ERROR){
-		printf("An lexing error ocurred!\n");
+		printf("line %d: An lexing error ocurred!\n",lexer_at_line);
 		exit(0);
 	}
-
-	if(current_token == BOG_EOF) exit(0);
 
 	return current_token;
 }
 
-int advance_over_BOG(int BOG, char* expected_token_name){
+int advance_over_BOG(int bog_enum){
 	if(current_token != bog_enum){
 		// TODO: Geta gert custom errors
-		throw_error(expected_token_name);
+		throw_error(enum_to_str(bog_enum));
 	}
 	advance();
 }
