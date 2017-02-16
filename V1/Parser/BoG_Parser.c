@@ -58,11 +58,30 @@ void decl(){
 void expr(){
 	if(current_token == BOG_NAME_ENUM){
 	}else if(current_token == BOG_RETURN){
+		advance();
+
+		expr();
 	}else if(current_token == BOG_OPNAME){
+		advance();
+
+		expr();
 	}else if(current_token == BOG_LITERAL){
+		advance();
 	}else if(lexeme_equals("(")){
-	}else if(current_toke == BOG_IF){
+		expr();
+
+		advance_over_str("(");
+	}else if(current_token == BOG_IF){
+		ifexpr();
 	}else if(current_token == BOG_WHILE){
+		advance();
+		advance_over_str("(");
+
+		expr();
+
+		advance_over_str(")");
+
+		body();
 	}else{
 		throw_error("Expression");
 	}
@@ -73,7 +92,7 @@ void expr(){
 	}
 }
 
-//ifexpr		= "if" , "(" , expr , ")" , body , [ { "elsif" , "(" , expr , ")" , body } ] , [ "else" , body ]
+//ifexpr		= "if" , "(" , expr , ")" , body , [ { "elif" , "(" , expr , ")" , body } ] , [ "else" , body ]
 void ifexpr(){
 	advance_over_str("if");
 	advance_over_str("(");
@@ -84,8 +103,28 @@ void ifexpr(){
 
 	body();
 
-	// TODO: Add elsif as a token in the lexer
-	while(current_token == BOG_ELSIF){
+	// TODO: Add elif as a token in the lexer
+	while(current_token == BOG_ELIF){
+		advance();
+		advance_over_str("(");
+
+		expr();
+
+		advance_over_str(")");
+
+		body();
+	}
+
+	if(current_token == BOG_ELSE){
+
+		advance();
+		advance_over_str("(");
+
+		expr();
+
+		advance_over_str(")");
+
+		body();
 	}
 }
 
@@ -104,78 +143,11 @@ void body(){
 }
 
 
-
-
-
-//TODO: Beytta í nanomorpho
-
-//program 	= fundcel , ";" , program
-//			| vardecl , ";" , program
-//			| expr , ";" , program
-int program(){
-	while(current_token != 0){
-		if(fundecl() == BOG_MATCH || vardecl() == BOG_MATCH || expr() == BOG_MATCH){
-		}else{
-			printf("Error!");
-			return BOG_NO_MATCH;
-		}
-	}
-
-	return BOG_MATCH;
+void parse(){
+	program();
 }
 
 
-//fundecl		= "fun" , NAME , "(" , args , ")" , body
-void fundecl(){
-	advance_over(BOG_FUN);
-	advance_over(BOG_NAME_ENUM);
-	advance_over("(");
 
-	args();
 
-	advance_over(")");
 
-	body();
-}
-
-//args		= "" 
-//			| NAME 
-//			| NAME , "," , args
-int args(){
-	if(current_token != BOG_NAME_ENUM) return BOG_MATCH;
-
-	advance_over(BOG_NAME_ENUM);
-
-	while(current_token == (int)','){
-		advance();
-
-		advance_over(BOG_NAME_ENUM);
-	}
-
-	return BOG_MATCH;
-}
-
-//vardecl		= "var" , vdt1
-int vardecl(){
-	advance_over("var");
-	if(current_token != BOG_VAR) return BOG_NO_MATCH;
-	
-	return vdt1();
-}
-
-//vdt1 		= NAME , ( vdt2 | vdt3 )
-int vdt1(){
-	if(current_token != BOG_NAME_ENUM) return BOG_NO_MATCH;
-
-	if(vdt2() == BOG_MATCH || vdt3() == BOG_MATCH) return BOG_MATCH;
-	else return BOG_NO_MATCH;
-}
-
-//vdt2		= "=" , expr , vdt3
-int vdt2(){
-	if(advance_over("=") == BOG_ERROR) return BOG_NO_MATCH;
-
-	if(expr() == BOG_NO_MATCH) return BOG_NO_MATCH;
-
-	if(vdt3() == BOG_NO_MATCH) return BOG_NO_MATCH;
-}
