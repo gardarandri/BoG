@@ -26,11 +26,11 @@
 	#define BOG_NAME(E) printf(#E); printf(" '%s'\n",yytext);
 	#define BOG_REPORT printf("Found unrecognized token: '%s'\n",yytext); exit(BOG_ERROR);
 #else
-	#define BOG_KEYWORD(E) return E;
-	#define BOG_SPECIAL_CHAR(E) return E;
-	#define BOG_OPERATOR(E) return E;
-	#define BOG_LITERALS(E) return E;
-	#define BOG_NAME(E) return E;
+	#define BOG_KEYWORD(E) lexer_incr(); return E;
+	#define BOG_SPECIAL_CHAR(E) lexer_incr(); return E;
+	#define BOG_OPERATOR(E) lexer_incr(); return E;
+	#define BOG_LITERALS(E) lexer_incr(); return E;
+	#define BOG_NAME(E) lexer_incr(); return E;
 	#define BOG_REPORT return BOG_ERROR;
 #endif
 
@@ -60,6 +60,13 @@ char* enum_to_str(int bog_enum){
 }
 
 int lexer_at_line = 1;
+int lexer_at_char = 0;
+int lexer_last_token_len = 0;
+
+void lexer_incr(){
+	lexer_at_char += lexer_last_token_len;
+	lexer_last_token_len = strlen(yytext);
+}
 
 %}
 
@@ -69,7 +76,7 @@ INTEGER			[0-9]+
 FLOAT			[0-9]+\.[0-9]+([Ee][+-]?[0-9]+)?
 BOOLEAN			(true)|(false)
 NAME			[a-zA-Z_][a-zA-Z0-9_]*
-OPNAME			[+-/*%<>=|]+
+OPNAME			[+-/*%<>=|!&]+
 DELIMITERS		[()\{\};.,]
 STRING			\"([^\"\n\r\f])*\"
 
@@ -77,9 +84,9 @@ COMMENT			;;;.*
 
 %%
 
-{NEWLINE}		lexer_at_line++;
-{COMMENT}		/* Do nothing */
-{WS}			/* Do nothing */
+{NEWLINE}		lexer_at_char = 0; lexer_at_line++;
+{COMMENT}		lexer_incr(); /* Do nothing */
+{WS}			lexer_incr(); /* Do nothing */
 
 var				BOG_KEYWORD(BOG_VAR)
 if				BOG_KEYWORD(BOG_IF)

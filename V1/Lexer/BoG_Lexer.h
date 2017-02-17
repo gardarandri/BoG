@@ -8,7 +8,7 @@
 int current_token;
 
 void throw_error(char* expected_token){
-	printf("line %d: Expected '%s' but found '%s'\n",lexer_at_line,expected_token,yytext);
+	printf("line %d, char %d: Expected '%s' but found '%s'\n",lexer_at_line,lexer_at_char,expected_token,yytext);
 	exit(0);
 }
 
@@ -42,7 +42,7 @@ int advance(){
 	current_token = yylex();
 
 	if(current_token == BOG_ERROR){
-		printf("line %d: An lexing error ocurred!\n",lexer_at_line);
+		printf("line %d: An lexing error ocurred! Could not lex '%s'.\n",lexer_at_line,yytext);
 		exit(0);
 	}
 

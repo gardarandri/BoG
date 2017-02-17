@@ -88,6 +88,8 @@ void expr(){
 			
 			expr();
 		}else if(lexeme_equals("(")){
+			printf("Am here\n");
+			advance();
 			if(!lexeme_equals(")")){
 				expr();
 				while(lexeme_equals(",")){
@@ -95,9 +97,8 @@ void expr(){
 
 					expr();
 				}
-			}else{
-				advance_over_str(")");
 			}
+			advance_over_str(")");
 		}
 	}else if(current_token == BOG_RETURN){
 		advance();

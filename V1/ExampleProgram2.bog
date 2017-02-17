@@ -1,0 +1,28 @@
+
+;;; This program solves Project Euler problem number 2
+
+
+fun ans(n){
+	var f_last, f, f_tmp;
+	var res;
+
+	f = 2;
+	f_last = 1;
+	res = 0;
+
+	while(f < n){
+		if(f % 2 == 0){
+			res += f;
+		};
+		f_tmp = f_last;
+		f_last = f;
+		f = f_last + f_tmp;
+	};
+
+	return res;
+}
+
+
+fun main(){
+	writeln(ans(4000000));
+}
