@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "BoG_Lexer.h"
 
 #define BOG_MATCH 5
@@ -18,6 +19,7 @@ void program(){
 	while(current_token != BOG_EOF){
 		function();
 	}
+	finish_lexing();
 }
 
 //function	= "fun" , NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";" } , "}"
@@ -182,8 +184,8 @@ void body(){
 }
 
 
-void parse(){
-	start_lexer();
+void parse(const char* input_file){
+	start_lexer(input_file);
 
 	program();
 

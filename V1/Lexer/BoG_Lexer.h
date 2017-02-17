@@ -1,4 +1,3 @@
-
 #include "BoG_Lexer_Generated.c"
 #include "stdio.h"
 #include "string.h"
@@ -12,11 +11,13 @@ void throw_error(char* expected_token){
 	exit(0);
 }
 
-void start_lexer(){
+void start_lexer(const char* input_file){
+	yyin = fopen(input_file, "r");
 	current_token = yylex();
 }
 
 int finish_lexing(){
+	fclose(yyin);
 	return BOG_FINISHED;
 }
 
