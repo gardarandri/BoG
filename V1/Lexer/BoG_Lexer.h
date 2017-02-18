@@ -59,9 +59,13 @@ int lexeme_equals(char* query){
 // Eftir:	Lesgreinirinn hefur labbað yfir 
 // 			eitt tók, Ef tókið er óþekkt er gefinn
 // 			villa og keyrslu hætt
-int advance(){
+int advance(
 #ifdef LEXER_DEBUG
-	printf("walking over: ");
+		int parser_line
+#endif
+		){
+#ifdef LEXER_DEBUG
+	printf("parser line %d: walking over: ", parser_line);
 	printf("%s",yytext);
 	printf("\n");
 #endif
@@ -81,11 +85,19 @@ int advance(){
 // Eftir:	Lesgreinirinn hefur labbað yfir 
 // 			eitt tók, ef það var ekki b hætti
 // 			forritið keyrslu og gefur villu.
-int advance_over_BOG(int bog_enum){
+int advance_over_BOG(
+#ifdef LEXER_DEBUG
+		int parser_line,
+#endif
+		int bog_enum){
 	if(current_token != bog_enum){
 		throw_error(enum_to_str(bog_enum));
 	}
-	advance();
+	advance(
+#ifdef LEXER_DEBUG
+			parser_line
+#endif
+		   );
 }
 
 
@@ -94,12 +106,20 @@ int advance_over_BOG(int bog_enum){
 // Eftir:	Lesgreinirinn hefur labbað yfir 
 // 			eitt tók, ef það var ekki strengurinn s
 // 			þá hættir forritið keyrslu og gefur villu.
-int advance_over_str(char* targ){
+int advance_over_str(
+#ifdef LEXER_DEBUG
+		int parser_line,
+#endif
+		char* targ){
 	if(strcmp(yytext,targ)){
 		// yytext != targ
 		throw_error(targ);
 	}
-	advance();
+	advance(
+#ifdef LEXER_DEBUG
+			parser_line
+#endif
+			);
 }
 
 

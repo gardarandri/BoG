@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include "BoG_Lexer.h"
 
+#ifdef LEXER_DEBUG
+	#define advance_over_BOG(E) advance_over_BOG(__LINE__,E)
+	#define advance_over_str(E) advance_over_str(__LINE__,E)
+	#define advance() advance(__LINE__)
+#endif
+
 void body();
 void ifexpr();
 void expr();
@@ -87,7 +93,6 @@ void expr(){
 			
 			expr();
 		}else if(lexeme_equals("(")){
-			printf("Am here\n");
 			advance();
 			if(!lexeme_equals(")")){
 				expr();
