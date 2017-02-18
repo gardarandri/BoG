@@ -51,8 +51,8 @@ fun is_pan_digit_prod(n){
 			k = n / i;
 			if(help(i,k,n) && (cnt(i) + cnt(k) + cnt(n) == 9)){
 				return true;
-			}
-		}
+			};
+		};
 	};
 	
 	return false;
