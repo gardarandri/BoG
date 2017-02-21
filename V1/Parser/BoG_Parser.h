@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include "BoG_Lexer.h"
 
-#define BOG_MATCH 5
-#define BOG_NO_MATCH 6
+#ifdef LEXER_DEBUG
+	#define advance_over_BOG(E) advance_over_BOG(__LINE__,E)
+	#define advance_over_str(E) advance_over_str(__LINE__,E)
+	#define advance() advance(__LINE__)
+#endif
 
 void body();
 void ifexpr();
@@ -90,7 +93,6 @@ void expr(){
 			
 			expr();
 		}else if(lexeme_equals("(")){
-			printf("Am here\n");
 			advance();
 			if(!lexeme_equals(")")){
 				expr();
@@ -150,7 +152,6 @@ void ifexpr(){
 
 	body();
 
-	// TODO: Add elif as a token in the lexer
 	while(current_token == BOG_ELIF){
 		advance();
 		advance_over_str("(");
@@ -183,7 +184,6 @@ void body(){
 
 	advance();
 }
-
 
 void parse(const char* input_file){
 	start_lexer(input_file);
