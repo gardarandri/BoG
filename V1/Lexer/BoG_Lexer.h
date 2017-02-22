@@ -85,6 +85,14 @@ int lexeme_equals(char* query){
 	return !strcmp(current_lexeme,query);
 }
 
+// Notkun:	b = next_lexeme_equals(s)
+// Fyrir:	s er strengur
+// Eftir:	b er satt þ.þ.a.a. tókið sem lesgreinirinn
+// 			er á eftir current_token hefur sömu strengjaframsetningu og s
+int next_lexeme_equals(char* query){
+	return !strcmp(yytext,query);
+}
+
 // Notkun:	advance(b);
 // Fyrir:	Lesgreining er í gangi
 // Eftir:	Lesgreinirinn hefur labbað yfir 
