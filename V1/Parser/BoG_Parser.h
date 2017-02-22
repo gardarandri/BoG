@@ -7,14 +7,17 @@
 	#define advance() advance(__LINE__)
 #endif
 
+
 void body();
 void ifexpr();
+void expr();
+void smallexpr();
+void binopexpr();
 void expr();
 void decl();
 void args();
 void function();
 void program();
-
 
 //program 	= function , program
 //			| function
@@ -66,7 +69,7 @@ void args(){
 
 //decl		= "var" , NAME , { "," , NAME }
 void decl(){
-	advance_over_str("var");
+	advance_over_BOG(BOG_VAR);
 
 	advance_over_BOG(BOG_NAME_ENUM);
 	while(lexeme_equals(",")){
@@ -75,45 +78,66 @@ void decl(){
 	}
 }
 
-//expr		= NAME
-//			| NAME , "=" , expr
-//			| NAME , "(" , [ expr , { "," , expr } ] , ")"
-//			| "return" , expr
-//			| OPNAME , expr
-//			| expr , OPNAME , expr
-//			| LITERAL
-//			| "(" , expr , ")"
-//			| ifexpr
-//			| "while" , "(" , expr , ")" , body
+
+//expr		=	'return', expr
+//			|	NAME, '=', expr
+//			|	binopexpr
 void expr(){
+	if(current_token == BOG_RETURN){
+		advance();
+		expr();
+	}else if(next_token == BOG_ASSIGN){
+		advance_over_BOG(BOG_NAME_ENUM);
+		advance();
+
+		expr();
+	}else{
+		binopexpr();
+	}
+}
+
+//binopexpr	=	smallexpr, { OPNAME, smallexpr }
+void binopexpr(){
+	smallexpr();
+	while(current_token == BOG_OPNAME){
+		advance();
+
+		smallexpr();
+	}
+}
+
+//smallexpr	=	NAME
+//			|	NAME, '(', [ expr, { ',', expr } ], ')'
+//			|	OPNAME, smallexpr
+//			| 	LITERAL 
+//			|	'(', expr, ')'
+//			|	ifexpr
+//			|	'while', expr, body
+void smallexpr(){
 	if(current_token == BOG_NAME_ENUM){
 		advance();
-		if(lexeme_equals("=")){
+
+		if(lexeme_equals("(")){
 			advance();
-			
-			expr();
-		}else if(lexeme_equals("(")){
-			advance();
-			if(!lexeme_equals(")")){
+
+			if(lexeme_equals(")")) advance();
+			else{
 				expr();
+
 				while(lexeme_equals(",")){
 					advance();
 
 					expr();
 				}
+				advance_over_str(")");
 			}
-			advance_over_str(")");
 		}
-	}else if(current_token == BOG_RETURN){
-		advance();
-
-		expr();
 	}else if(current_token == BOG_OPNAME){
-		advance();
+		advance_over_BOG(BOG_OPNAME);
 
-		expr();
+		smallexpr();
 	}else if(current_token == BOG_LITERAL){
-		advance();
+		advance_over_BOG(BOG_LITERAL);
 	}else if(lexeme_equals("(")){
 		advance_over_str("(");
 
@@ -122,24 +146,15 @@ void expr(){
 		advance_over_str(")");
 	}else if(current_token == BOG_IF){
 		ifexpr();
-	}else if(current_token == BOG_WHILE){
-		advance();
-		advance_over_str("(");
+	}else{
+		advance_over_BOG(BOG_WHILE);
 
 		expr();
-
-		advance_over_str(")");
 
 		body();
-	}else{
-		throw_error("Expression");
-	}
-
-	if(current_token == BOG_OPNAME){
-		advance();
-		expr();
 	}
 }
+
 
 //ifexpr		= "if" , "(" , expr , ")" , body , [ { "elif" , "(" , expr , ")" , body } ] , [ "else" , body ]
 void ifexpr(){

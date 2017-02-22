@@ -56,6 +56,30 @@ function	= "fun" , NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";"
 
 decl		= "var" , NAME , { NAME }
 
+expr		=	'return', expr
+			|	NAME, '=', expr
+			|	binopexpr
+			;
+
+binopexpr	=	smallexpr, { OPNAME, smallexpr }
+			;
+
+smallexpr	=	NAME
+			|	NAME, '(', [ expr, { ',', expr } ], ')'
+			|	OPNAME, smallexpr
+			| 	LITERAL 
+			|	'(', expr, ')'
+			|	ifexpr
+			|	'while', expr, body
+			;
+
+
+ifexpr		= "if" , "(" , expr , ")" , body , [ "elif" , "(" , expr , ")" , body ] , [ "else" , body ]
+
+body		= "{" , expr , ";" , { expr , ";" } , "}"
+~~~~
+
+<!----
 expr		= NAME
 			| NAME , "=" , expr
 			| NAME , "(" , [ expr , { "," , expr } ] , ")"
@@ -66,8 +90,4 @@ expr		= NAME
 			| "(" , expr , ")"
 			| ifexpr
 			| "while" , "(" , expr , ")" , body
-
-ifexpr		= "if" , "(" , expr , ")" , body , [ "elif" , "(" , expr , ")" , body ] , [ "else" , body ]
-
-body		= "{" , expr , ";" , { expr , ";" } , "}"
-~~~~
+--->
