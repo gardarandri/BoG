@@ -64,17 +64,13 @@ int finish_lexing(){
 	return BOG_FINISHED;
 }
 
-/*
 int current_lexeme_size(){
 	return sizeof(char) * (strlen(yytext)+1);
 }
-*/
 
-/*
-void current_lexeme(char* write_to){
+void write_current_lexeme_to(char* write_to){
 	strcpy(write_to,yytext);
 }
-*/
 
 
 // Notkun:	b = lexeme_equals(s)

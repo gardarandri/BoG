@@ -12,7 +12,7 @@ debugtest:
 	./BoG_Compiler ExampleProgram.bog
 
 debug:
-	gcc -L$(FLPATH) $(INCLUDE) -o BoG_Compiler BoG_Compiler.c -lfl -DLEXER_DEBUG
+	gcc -L$(FLPATH) $(INCLUDE) -o BoG_Compiler BoG_Compiler.c -lfl -DLEXER_DEBUG -g
 
 clean:
 	rm BoG_Compiler

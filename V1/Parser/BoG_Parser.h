@@ -1,23 +1,28 @@
 #include <stdio.h>
 #include "BoG_Lexer.h"
+#include "BoG_Parser_util.h"
 
 #ifdef LEXER_DEBUG
 	#define advance_over_BOG(E) advance_over_BOG(__LINE__,E)
 	#define advance_over_str(E) advance_over_str(__LINE__,E)
 	#define advance() advance(__LINE__)
+	#define new_BOG_syntax_node(E) new_BOG_syntax_node(E,__LINE__)
 #endif
 
 
-void body();
-void ifexpr();
-void expr();
-void smallexpr();
-void binopexpr();
-void expr();
-void decl();
-void args();
-void function();
-void program();
+
+
+
+BOG_syntax_node* body();
+BOG_syntax_node* ifexpr();
+BOG_syntax_node* expr();
+BOG_syntax_node* smallexpr();
+BOG_syntax_node* binopexpr();
+BOG_syntax_node* expr();
+BOG_syntax_node* decl();
+BOG_syntax_node* args();
+BOG_syntax_node* function();
+BOG_syntax_node* program();
 
 //program 	= function , program
 //			| function
@@ -27,11 +32,11 @@ BOG_syntax_node* program(){
 	BOG_syntax_node* func = NULL;
 
 	while(current_token != BOG_EOF){
-		if(res.down == NULL){
-			res.down = function();
-			func = res.down;
+		if(res->down == NULL){
+			res->down = function();
+			func = res->down;
 		}else{
-			func.next = function();
+			func->next = function();
 		}
 	}
 	finish_lexing();
@@ -39,14 +44,14 @@ BOG_syntax_node* program(){
 }
 
 //function	= "fun" , NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";" } , "}"
-BOG_syntax_node function(){
+BOG_syntax_node* function(){
 	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_FUNCTION);
 
 	advance_over_BOG(BOG_FUN);
 
 	BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
-	write_current_lexeme_to(name.content);
-	res.down = name;
+	write_current_lexeme_to(name->content);
+	res->down = name;
 
 	advance_over_BOG(BOG_NAME_ENUM);
 
@@ -58,14 +63,14 @@ BOG_syntax_node function(){
 	advance_over_str("{");
 
 	while(current_token == BOG_VAR){
-		t.next = decl();
-		t = t.next;
+		t->next = decl();
+		t = t->next;
 		advance_over_str(";");
 	}
 
 	while(!lexeme_equals("}")){
-		t.next = expr();
-		t = t.next;
+		t->next = expr();
+		t = t->next;
 		advance_over_str(";");
 	}
 
@@ -77,11 +82,13 @@ BOG_syntax_node function(){
 //args		= NAME , { "," , NAME }
 //			| ""
 BOG_syntax_node* args(BOG_syntax_node* a){
-	if(current_token != BOG_NAME_ENUM) return;
+	if(current_token != BOG_NAME_ENUM) a;
 
 	BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
-	write_current_lexeme_to(name.content);
-	a.next = name;
+	printf("GOT the mallox!\n");
+	write_current_lexeme_to((void*)name->content);
+	printf("Got over write!\n");
+	a->next = name;
 	a = name;
 
 	advance();
@@ -90,8 +97,8 @@ BOG_syntax_node* args(BOG_syntax_node* a){
 		advance();
 
 		name = new_BOG_syntax_node(BOG_ST_NAME);
-		write_current_lexeme_to(name.content);
-		a.next = name;
+		write_current_lexeme_to(name->content);
+		a->next = name;
 		a = name;
 
 		advance_over_BOG(BOG_NAME_ENUM);
@@ -102,47 +109,76 @@ BOG_syntax_node* args(BOG_syntax_node* a){
 
 
 //decl		= "var" , NAME , { "," , NAME }
-void decl(){
+BOG_syntax_node* decl(){
 	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_DECL);
 
 	advance_over_BOG(BOG_VAR);
 
 	BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
-	write_current_lexeme_to(name.content);
+	write_current_lexeme_to(name->content);
+	res->down = name;
 
 	advance_over_BOG(BOG_NAME_ENUM);
 	while(lexeme_equals(",")){
 		advance();
+
+		BOG_syntax_node* tmp = new_BOG_syntax_node(BOG_ST_NAME);
+		write_current_lexeme_to(name->content);
+		name->next = tmp;
+		name = tmp;
+
 		advance_over_BOG(BOG_NAME_ENUM);
 	}
+
+	return res;
 }
 
 
 //expr		=	'return', expr
 //			|	NAME, '=', expr
 //			|	binopexpr
-void expr(){
+BOG_syntax_node* expr(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_EXPR);
+
 	if(current_token == BOG_RETURN){
+		res->down = new_BOG_syntax_node(BOG_ST_RETURN);
 		advance();
-		expr();
+		res->down->next = expr();
 	}else if(next_token == BOG_ASSIGN){
+		res->down = new_BOG_syntax_node(BOG_ST_NAME);
+		write_current_lexeme_to(res->down->content);
+
 		advance_over_BOG(BOG_NAME_ENUM);
 		advance();
 
-		expr();
+		res->down->next = expr();
 	}else{
-		binopexpr();
+		res->down = binopexpr();
 	}
+
+	return res;
 }
 
 //binopexpr	=	smallexpr, { OPNAME, smallexpr }
-void binopexpr(){
-	smallexpr();
+BOG_syntax_node* binopexpr(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_BINOPEXPR);
+
+	res->down = smallexpr();
+
+	BOG_syntax_node* t = res->down;
+
 	while(current_token == BOG_OPNAME){
+		t->next = new_BOG_syntax_node(BOG_ST_OPNAME);
+		t = t->next;
+		write_current_lexeme_to(t->content);
+
 		advance();
 
-		smallexpr();
+		t->next = smallexpr();
+		t = t->next;
 	}
+
+	return res;
 }
 
 //smallexpr	=	NAME
@@ -152,98 +188,135 @@ void binopexpr(){
 //			|	'(', expr, ')'
 //			|	ifexpr
 //			|	'while', expr, body
-void smallexpr(){
+BOG_syntax_node* smallexpr(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_SMALLEXPR);
+
 	if(current_token == BOG_NAME_ENUM){
+		BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
+		write_current_lexeme_to(name->content);
+
 		advance();
 
 		if(lexeme_equals("(")){
+			BOG_syntax_node* t = new_BOG_syntax_node(BOG_ST_CALL);
+
 			advance();
 
 			if(lexeme_equals(")")) advance();
 			else{
-				expr();
+				t->next = expr();
+				t = t->next;
 
 				while(lexeme_equals(",")){
 					advance();
 
-					expr();
+					t->next = expr();
+					t = t->next;
 				}
 				advance_over_str(")");
 			}
 		}
 	}else if(current_token == BOG_OPNAME){
+		res->down = new_BOG_syntax_node(BOG_ST_OPNAME);
+		write_current_lexeme_to(res->down->content);
+
 		advance_over_BOG(BOG_OPNAME);
 
-		smallexpr();
+		res->down->next = smallexpr();
 	}else if(current_token == BOG_LITERAL){
+		res->down = new_BOG_syntax_node(BOG_ST_LITERAL);
+		write_current_lexeme_to(res->down->content);
+
 		advance_over_BOG(BOG_LITERAL);
 	}else if(lexeme_equals("(")){
 		advance_over_str("(");
 
-		expr();
+		res->down = expr();
 
 		advance_over_str(")");
 	}else if(current_token == BOG_IF){
-		ifexpr();
+		res->down = ifexpr();
 	}else{
+		res->down = new_BOG_syntax_node(BOG_ST_WHILE);
+
 		advance_over_BOG(BOG_WHILE);
 
-		expr();
+		res->down->next = expr();
 
-		body();
+		res->down->next->next = body();
 	}
+
+	return res;
 }
 
 
 //ifexpr		= "if" , "(" , expr , ")" , body , [ { "elif" , "(" , expr , ")" , body } ] , [ "else" , body ]
-void ifexpr(){
+BOG_syntax_node* ifexpr(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_IF);
+
 	advance_over_BOG(BOG_IF);
 	advance_over_str("(");
 
-	expr();
+	res->down = expr();
+
+	BOG_syntax_node* t = res->down;
 
 	advance_over_str(")");
 
-	body();
+	t->next = body();
+	t = t->next;
 
 	while(current_token == BOG_ELIF){
 		advance();
 		advance_over_str("(");
 
-		expr();
+		t->next = expr();
+		t = t->next;
 
 		advance_over_str(")");
 
-		body();
+		t->next = body();
+		t = t->next;
 	}
 
 	if(current_token == BOG_ELSE){
 		advance();
 
-		body();
+		t->next = body();
+		t = t->next;
 	}
+
+	return res;
 }
 
 //body		= "{" , expr , ";" , { expr , ";" } , "}"
-void body(){
+BOG_syntax_node* body(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_BODY);
+
 	advance_over_str("{");
 
-	expr();
+	res->down = expr();
+	BOG_syntax_node* t = res->down;
+
 	advance_over_str(";");
 
 	while(!lexeme_equals("}")){
-		expr();
+		t->next = expr();
+		t = t->next;
 		advance_over_str(";");
 	}
 
 	advance();
+
+	return res;
 }
 
 void parse(const char* input_file){
 	start_lexer(input_file);
 
-	program();
+	BOG_syntax_node* t = program();
 
+	print_BOG_syntax_node(t,0);
 }
 
 
