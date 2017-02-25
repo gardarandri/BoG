@@ -21,55 +21,94 @@ void program();
 
 //program 	= function , program
 //			| function
-void program(){
+BOG_syntax_node* program(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_PROGRAM);
+
+	BOG_syntax_node* func = NULL;
+
 	while(current_token != BOG_EOF){
-		function();
+		if(res.down == NULL){
+			res.down = function();
+			func = res.down;
+		}else{
+			func.next = function();
+		}
 	}
 	finish_lexing();
+	return res;
 }
 
 //function	= "fun" , NAME , "(" , args , ")" , "{" , { decl , ";" } , { expr , ";" } , "}"
-void function(){
+BOG_syntax_node function(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_FUNCTION);
+
 	advance_over_BOG(BOG_FUN);
+
+	BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
+	write_current_lexeme_to(name.content);
+	res.down = name;
+
 	advance_over_BOG(BOG_NAME_ENUM);
 
 	advance_over_str("(");
 
-	args();
+	BOG_syntax_node* t = args(name);
 
 	advance_over_str(")");
 	advance_over_str("{");
 
 	while(current_token == BOG_VAR){
-		decl();
+		t.next = decl();
+		t = t.next;
 		advance_over_str(";");
 	}
 
 	while(!lexeme_equals("}")){
-		expr();
+		t.next = expr();
+		t = t.next;
 		advance_over_str(";");
 	}
 
 	advance_over_str("}");
+
+	return res;
 }
 
 //args		= NAME , { "," , NAME }
 //			| ""
-void args(){
+BOG_syntax_node* args(BOG_syntax_node* a){
 	if(current_token != BOG_NAME_ENUM) return;
+
+	BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
+	write_current_lexeme_to(name.content);
+	a.next = name;
+	a = name;
 
 	advance();
 
 	while(lexeme_equals(",")){
 		advance();
+
+		name = new_BOG_syntax_node(BOG_ST_NAME);
+		write_current_lexeme_to(name.content);
+		a.next = name;
+		a = name;
+
 		advance_over_BOG(BOG_NAME_ENUM);
 	}
+
+	return a;
 }
 
 
 //decl		= "var" , NAME , { "," , NAME }
 void decl(){
+	BOG_syntax_node* res = new_BOG_syntax_node(BOG_ST_DECL);
+
 	advance_over_BOG(BOG_VAR);
+
+	BOG_syntax_node* name = new_BOG_syntax_node(BOG_ST_NAME);
+	write_current_lexeme_to(name.content);
 
 	advance_over_BOG(BOG_NAME_ENUM);
 	while(lexeme_equals(",")){
