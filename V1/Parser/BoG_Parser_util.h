@@ -69,7 +69,7 @@
 //
 //  ->  SMALLEXPR ->
 //        |
-//      NAME -> CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
+//      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
 //
 //  
 //  -> SMALLEXPR  ->
@@ -148,25 +148,57 @@ BOG_syntax_node* new_BOG_syntax_node(int type,
 #endif
 		){
 
+	BOG_syntax_node* res = malloc(sizeof(BOG_syntax_node));
+
 #ifdef LEXER_DEBUG
-	printf("line %d: new BOG_syntax_node\n",line);
+	if(res == NULL){
+		printf("res malloc failed");
+	}
 #endif
 
-	printf("LALAL\n");
-	printf("%d\n",sizeof(BOG_syntax_node));
-	BOG_syntax_node* res = malloc(sizeof(BOG_syntax_node));
-	if(res == NULL){
-		res = malloc(sizeof(BOG_syntax_node));
-		printf("lolLALAL\n");
-	}
-	printf("LALAL\n");
-	printf("%p\n",(void*)res);
 	res->type = type;
-	printf("LALAL\n");
 	res->next = NULL;
-	printf("LALAL\n");
 	res->down = NULL;
-	printf("LALAL\n");
+	res->content = NULL;
+
+#ifdef LEXER_DEBUG
+	printf("line %d: new BOG_syntax_node: %s\n",line,str_name_BOG_syntax_node(res));
+#endif
+
+	return res;
+}
+
+BOG_syntax_node* new_BOG_syntax_node_c(int type, char* str,
+#ifdef LEXER_DEBUG
+		int line
+#endif
+		){
+
+
+	BOG_syntax_node* res = malloc(sizeof(BOG_syntax_node));
+
+#ifdef LEXER_DEBUG
+	if(res == NULL){
+		printf("res malloc failed");
+	}
+#endif
+
+	res->type = type;
+	res->next = NULL;
+	res->down = NULL;
+	res->content = malloc((strlen(str)+1)*sizeof(char));
+
+#ifdef LEXER_DEBUG
+	printf("line %d: new BOG_syntax_node: %s\n",line,str_name_BOG_syntax_node(res));
+#endif
+
+#ifdef LEXER_DEBUG
+	if(res == NULL){
+		printf("content malloc failed");
+	}
+#endif
+
+	strcpy(res->content, str);
 
 	return res;
 }
@@ -180,7 +212,8 @@ void print_BOG_syntax_node(BOG_syntax_node* n, int depth){
 		i--;
 	}
 
-	printf("%s\n",str_name_BOG_syntax_node(n));
+	if(n->content != NULL) printf("%s (%s)\n",str_name_BOG_syntax_node(n),(char*)n->content);
+	else printf("%s\n",str_name_BOG_syntax_node(n));
 
 	print_BOG_syntax_node(n->down,depth+1);
 
