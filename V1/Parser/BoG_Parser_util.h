@@ -36,6 +36,8 @@
 //          |
 //        NAME -> NAME -> NAME -> ... -> NAME -> DECL -> DECL -> ... -> EXPR -> EXPR -> ... -> EXPR
 //
+//        Þarf ekki decl, hefur bara hliðarverkenir
+//
 //
 //  ->   DECL   ->
 //        |
@@ -56,6 +58,8 @@
 //        |
 //     BINOPEXPR
 //
+//  Einfalda
+//  Taka ákvörðun um forgang
 //  
 //  -> BINOPEXPR ->
 //        |
@@ -82,6 +86,7 @@
 //      LITERAL
 //
 //  
+//  Sleppa
 //  -> SMALLEXPR  ->
 //        |
 //       EXPR
@@ -108,6 +113,9 @@
 //  ->  BODY  ->
 //       |
 //     EXPR -> EXPR -> ... -> EXPR
+//
+//
+//
 
 
 
