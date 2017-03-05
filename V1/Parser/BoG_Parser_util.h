@@ -53,53 +53,83 @@
 //        |
 //      NAME -> EXPR
 //
-//
-//  ->   EXPR   ->
-//        |
-//     BINOPEXPR
-//
-//  Einfalda
-//  Taka ákvörðun um forgang
-//  
-//  -> BINOPEXPR ->
-//        |
-//      SMALLEXPR -> OPNAME -> ... -> OPNAME -> SMALLEXPR
-//
-//
-//  ->  SMALLEXPR ->
+//  ->  EXPR ->
 //        |
 //      NAME
 //
-//
-//  ->  SMALLEXPR ->
+//  ->  EXPR ->
 //        |
 //      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
 //
-//  
-//  -> SMALLEXPR  ->
+//  ->  EXPR ->
 //        |
-//      OPNAME -> SMALLEXPR
+//		EXPR -> OPNAME -> EXPR -> ... -> OPNAME -> EXPR
+//
+//	->	EXPR ->
+//		  |
+//		OPNAME -> EXPR
+//
+//  -> EXPR  ->
+//       |
+//    LITERAL
 //
 //  
-//  -> SMALLEXPR  ->
-//        |
-//      LITERAL
+//  -> EXPR  ->
+//       |
+//      IF
 //
 //  
-//  Sleppa
-//  -> SMALLEXPR  ->
-//        |
-//       EXPR
+//  -> EXPR  ->
+//      |
+//    WHILE
 //
-//  
-//  -> SMALLEXPR  ->
-//        |
-//        IF
-//
-//  
-//  -> SMALLEXPR  ->
-//        |
-//      WHILE
+////
+////  ->   EXPR   ->
+////        |
+////     BINOPEXPR
+////
+////  Einfalda
+////  Taka ákvörðun um forgang
+////  
+////  -> BINOPEXPR ->
+////        |
+////      SMALLEXPR -> OPNAME -> ... -> OPNAME -> SMALLEXPR
+////
+////
+////  ->  SMALLEXPR ->
+////        |
+////      NAME
+////
+////
+////  ->  SMALLEXPR ->
+////        |
+////      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
+////
+////  
+////  -> SMALLEXPR  ->
+////        |
+////      OPNAME -> SMALLEXPR
+////
+////  
+////  -> SMALLEXPR  ->
+////        |
+////      LITERAL
+////
+////  
+////  Sleppa
+////  -> SMALLEXPR  ->
+////        |
+////       EXPR
+////
+////  
+////  -> SMALLEXPR  ->
+////        |
+////        IF
+////
+////  
+////  -> SMALLEXPR  ->
+////        |
+////      WHILE
 //
 //  -> IF  ->
 //     |
@@ -121,11 +151,21 @@
 
 typedef struct BOG_syntax_node{
 	int type;
-	char* content;
+	void* content;
+
+	int linenum;
+	int charnum;
 
 	struct BOG_syntax_node* next;
 	struct BOG_syntax_node* down;
 } BOG_syntax_node;
+
+
+typedef struct BOG_function_info{
+	char* name;
+	int number_of_arguments;
+} BOG_function_info;
+
 
 char* str_name_BOG_syntax_node(BOG_syntax_node* n){
 	int e = n->type;
@@ -150,9 +190,9 @@ char* str_name_BOG_syntax_node(BOG_syntax_node* n){
 }
 
 
-BOG_syntax_node* new_BOG_syntax_node(int type,
+BOG_syntax_node* new_BOG_syntax_node(int type
 #ifdef LEXER_DEBUG
-		int line
+		,int line
 #endif
 		){
 
@@ -169,6 +209,9 @@ BOG_syntax_node* new_BOG_syntax_node(int type,
 	res->down = NULL;
 	res->content = NULL;
 
+	res->linenum = lexer_at_line;
+	res->charnum = lexer_at_char;
+
 #ifdef LEXER_DEBUG
 	printf("line %d: new BOG_syntax_node: %s\n",line,str_name_BOG_syntax_node(res));
 #endif
@@ -176,9 +219,9 @@ BOG_syntax_node* new_BOG_syntax_node(int type,
 	return res;
 }
 
-BOG_syntax_node* new_BOG_syntax_node_c(int type, char* str,
+BOG_syntax_node* new_BOG_syntax_node_c(int type, char* str
 #ifdef LEXER_DEBUG
-		int line
+		,int line
 #endif
 		){
 
@@ -196,6 +239,9 @@ BOG_syntax_node* new_BOG_syntax_node_c(int type, char* str,
 	res->down = NULL;
 	res->content = malloc((strlen(str)+1)*sizeof(char));
 
+	res->linenum = lexer_at_line;
+	res->charnum = lexer_at_char;
+
 #ifdef LEXER_DEBUG
 	printf("line %d: new BOG_syntax_node: %s\n",line,str_name_BOG_syntax_node(res));
 #endif
@@ -206,7 +252,7 @@ BOG_syntax_node* new_BOG_syntax_node_c(int type, char* str,
 	}
 #endif
 
-	strcpy(res->content, str);
+	strcpy((char*)res->content, str);
 
 	return res;
 }
@@ -227,3 +273,8 @@ void print_BOG_syntax_node(BOG_syntax_node* n, int depth){
 
 	print_BOG_syntax_node(n->next,depth);
 }
+
+
+
+
+

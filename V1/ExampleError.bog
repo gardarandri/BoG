@@ -6,8 +6,8 @@ fun mja(){
 	var b;
 
 	return a;
-};
+}
 
 
 fun main(){
-};
+}

@@ -1,5 +1,3 @@
-#ifndef BOG_VARTABLE_H
-#define BOG_VARTABLE_H
 
 #include <string.h>
 
@@ -28,6 +26,10 @@ BOG_vartable* bog_vartable_new(int s){
 	res->names = malloc(sizeof(char*) * s);
 	res->vals = malloc(sizeof(int) * s);
 
+	for(int i=0; i<s; i++){
+		res->names[i] = NULL;
+	}
+
 	res->size = s;
 
 	return res;
@@ -38,7 +40,7 @@ BOG_vartable* bog_vartable_new(int s){
 // Fyrir:	t er bog vartafla, n er strengur
 // Eftir:	x er sætisnúmer breytunnar sem hefur nafið n.
 int bog_vartable_get(BOG_vartable* t, char* name){
-	for(int i=0; i<t->size; i++){
+	for(int i=0; i<t->size && t->names[i] != NULL; i++){
 		if(!strcmp(name,t->names[i])){
 			return t->vals[i];
 		}
@@ -61,8 +63,9 @@ int bog_vartable_put(BOG_vartable* t, char* name, int pos){
 		return -1;
 	}
 
+	t->names[i] = malloc(sizeof(char) * (strlen(name)+1));
 	strcpy(t->names[i],name);
-	vals[i] = pos;
+	t->vals[i] = pos;
 }
 
 
@@ -71,6 +74,7 @@ int bog_vartable_put(BOG_vartable* t, char* name, int pos){
 // Eftir:	búið er að hreinsa töfluna t
 void bog_vartable_clear(BOG_vartable* t){
 	for(int i=0; i<t->size; i++){
+		free(t->names[i]);
 		t->names[i] = NULL;
 	}
 }
@@ -84,4 +88,3 @@ void bog_vartable_delete(BOG_vartable* t){
 
 
 
-#endif

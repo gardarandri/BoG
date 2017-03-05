@@ -1,5 +1,5 @@
 FLPATH = "C:\Program Files (x86)\GnuWin32\lib"
-INCLUDE = -I./Lexer/ -I./Parser/
+INCLUDE = -I./Lexer/ -I./Parser/ -I./Util/
 
 default:
 	gcc -L$(FLPATH) $(INCLUDE) -o BoG_Compiler BoG_Compiler.c -lfl

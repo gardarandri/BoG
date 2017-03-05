@@ -22,12 +22,19 @@ fun d_my_func(x, r){
 fun main(){
 	var lalli;
 	lalli = 203492;
-	if(lalli > 193 || lalli == 0){
-		printf("Hallo ballo\n");
+	if((lalli > 193) || (lalli == 0)){
+		writeln("Hallo ballo\n");
 	};
-	printf(10.0403e-59);
+	writeln(10.0403e-59);
 
-	lalli = lalli + 1;
+	lalli = (lalli + 1);
 
-	lalli -= 1000394;
+	writeln(lalli);
+
+	lalli = (lalli - 1000394);
+
+	writeln(lalli);
+
+
+	return 1;
 }
