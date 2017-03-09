@@ -53,21 +53,26 @@
 //        |
 //      NAME -> EXPR
 //
+//
 //  ->  EXPR ->
 //        |
 //      NAME
+//
 //
 //  ->  EXPR ->
 //        |
 //      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
 //
+//
 //  ->  EXPR ->
 //        |
 //		EXPR -> OPNAME -> EXPR -> ... -> OPNAME -> EXPR
 //
+//
 //	->	EXPR ->
 //		  |
 //		OPNAME -> EXPR
+//
 //
 //  -> EXPR  ->
 //       |
@@ -83,53 +88,6 @@
 //      |
 //    WHILE
 //
-////
-////  ->   EXPR   ->
-////        |
-////     BINOPEXPR
-////
-////  Einfalda
-////  Taka ákvörðun um forgang
-////  
-////  -> BINOPEXPR ->
-////        |
-////      SMALLEXPR -> OPNAME -> ... -> OPNAME -> SMALLEXPR
-////
-////
-////  ->  SMALLEXPR ->
-////        |
-////      NAME
-////
-////
-////  ->  SMALLEXPR ->
-////        |
-////      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
-////
-////  
-////  -> SMALLEXPR  ->
-////        |
-////      OPNAME -> SMALLEXPR
-////
-////  
-////  -> SMALLEXPR  ->
-////        |
-////      LITERAL
-////
-////  
-////  Sleppa
-////  -> SMALLEXPR  ->
-////        |
-////       EXPR
-////
-////  
-////  -> SMALLEXPR  ->
-////        |
-////        IF
-////
-////  
-////  -> SMALLEXPR  ->
-////        |
-////      WHILE
 //
 //  -> IF  ->
 //     |
@@ -139,6 +97,7 @@
 //  -> WHILE ->
 //       |
 //     EXPR -> BODY
+//
 //
 //  ->  BODY  ->
 //       |
