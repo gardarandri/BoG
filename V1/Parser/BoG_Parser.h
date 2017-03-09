@@ -98,6 +98,8 @@ BOG_syntax_node* function(){
 
 	res->content = (void*)fi;
 
+	bog_vartable_put(function_table,fi->name,arg_cnt);
+
 	advance_over_str(")");
 	advance_over_str("{");
 
@@ -298,9 +300,9 @@ BOG_syntax_node* smallexpr(){
 
 		advance_over_BOG(BOG_WHILE);
 
-		res->next = expr();
+		res->down = expr();
 
-		res->next->next = body();
+		res->down->next = body();
 	}
 
 	return res;
@@ -460,10 +462,9 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 			parameter_count++;
 		} 
 
-		if(parameter_count != ((BOG_function_info*)e->down->content)->number_of_arguments){
-			printf("line %d, char %d: To few arguments to function '%s', expected %d arguments.\n",
-					e->down->linenum, e->down->charnum, ((BOG_function_info*)e->down->content)->name,
-					((BOG_function_info*)e->down->content)->number_of_arguments);
+		int expected_number_of_arguments = bog_vartable_get(function_table,(char*)e->down->content);
+		if(expected_number_of_arguments != -1 && parameter_count != expected_number_of_arguments){
+			printf("line %d, char %d: To few arguments to function '%s'\n", e->down->linenum, e->down->charnum,(char*)e->down->content);
 			exit(1);
 		}
 
@@ -539,6 +540,8 @@ void if_asm(FILE* outfileptr, BOG_syntax_node* i){
 
 void while_asm(FILE* outfileptr, BOG_syntax_node* w){
 	printf("in function while_asm\n");
+	assert(w->type == BOG_ST_WHILE);
+
 	int start_label = label_count++;
 	int done_label = label_count++;
 

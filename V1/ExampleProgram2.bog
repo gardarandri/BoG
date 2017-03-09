@@ -12,17 +12,24 @@ fun ans(n){
 
 	while(f < n){
 		if(f % 2 == 0){
-			res += f;
+			res = res + f;
 		};
 		f_tmp = f_last;
 		f_last = f;
 		f = f_last + f_tmp;
+		writeln(f);
 	};
+	
+	writeln("res=");
+	writeln(res);
 
 	return res;
 }
 
 
 fun main(){
-	writeln(ans(4000000));
+	writeln("is working!");
+	var answer = ans(4000000);
+	writeln(answer);
+	writeln("is working!");
 }
