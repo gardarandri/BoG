@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "var_array.h"
+#include "stack.c"
 
 int main()
 {
@@ -41,6 +42,35 @@ int main()
 	free(va);
 	free(vb);
 
+
+
+	BOG_stack* s = bog_stack_new();
+
+	int a = 1;
+	int b = 2;
+	int c = 3;
+	int d = 4;
+	int e = 5;
+	int f = 6;
+	int g = 7;
+	int h = 8;
+
+	bog_stack_push(s,&a);
+	bog_stack_push(s,&b);
+	bog_stack_push(s,&c);
+	bog_stack_push(s,&d);
+	bog_stack_push(s,&e);
+	bog_stack_push(s,&f);
+
+	printf("%d\n",*(int*)bog_stack_top(s));
+	printf("%d\n",*(int*)bog_stack_pop(s));
+
+	bog_stack_push(s,&h);
+
+	while(!bog_stack_is_empty(s))
+		printf("%d\n",*(int*)bog_stack_pop(s));
+
+	bog_stack_delete(s);
 
 	return 0;
 }
