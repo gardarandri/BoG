@@ -379,7 +379,6 @@ void body_asm(FILE* outfileptr, BOG_syntax_node* b);
 void output_asm(char* outfilename, BOG_syntax_node* program);
 
 void function_asm(FILE* outfileptr, BOG_syntax_node* f){
-	printf("in function function_asm\n");
 	assert(f->type == BOG_ST_FUNCTION);
 
 	fprintf(outfileptr,"#\"%s[f%d]\" =\n[\n",((BOG_function_info*)f->content)->name,
@@ -409,7 +408,6 @@ void function_asm(FILE* outfileptr, BOG_syntax_node* f){
 }
 
 void decl_asm(FILE* outfileptr, BOG_syntax_node* d){
-	printf("in function decl_asm\n");
 	assert(d->type == BOG_ST_DECL);
 
 	BOG_syntax_node* t = d->down;
@@ -424,29 +422,20 @@ void decl_asm(FILE* outfileptr, BOG_syntax_node* d){
 }
 
 void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
-	printf("in function expr_asm\n");
 	assert(e->down != NULL);
 	assert(e->type == BOG_ST_EXPR);
 
 	if(e->down->type == BOG_ST_RETURN){
-		printf("BOG_ST_RETURN\n");
 		expr_asm(outfileptr,e->down->next);
 		fprintf(outfileptr,"(Return)\n");
 	}else if(e->down->type == BOG_ST_NAME){
-		printf("BOG_ST_NAME\n");
 		if(e->down->next == NULL){
-			printf("is NULL");
-			printf("localvar_table %p\n(char*)e->down->content %p\n",localvar_table,(char*)e->down->content);
-			printf((char*)e->down->content);
 			fprintf(outfileptr,"(Fetch %d)\n",bog_vartable_get(localvar_table,(char*)e->down->content));
-			printf("????");
 		}else{
-			printf("not NULL");
 			expr_asm(outfileptr,e->down->next);
 			fprintf(outfileptr,"(Store %d)\n",bog_vartable_get(localvar_table,(char*)e->down->content));
 		}
 	}else if(e->down->type == BOG_ST_CALL){
-		printf("BOG_ST_CALL\n");
 		BOG_syntax_node* t = e->down->next;
 
 		int parameter_count = 0;
@@ -470,7 +459,6 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 
 		fprintf(outfileptr,"(Call #\"%s[f%d]\" %d)\n",(char*)e->down->content,parameter_count,parameter_count);
 	}else if(e->down->type == BOG_ST_EXPR){
-		printf("BOG_ST_EXPR\n");
 		BOG_syntax_node* t = e->down;
 
 		expr_asm(outfileptr,t);
@@ -489,17 +477,13 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 			t = t->next;
 		}
 	}else if(e->down->type == BOG_ST_OPNAME){
-		printf("BOG_ST_OPNAME\n");
 		expr_asm(outfileptr,e->down->next);
 		fprintf(outfileptr,"(Call #\"%s[f1]\" 1)\n",(char*)e->down->content);
 	}else if(e->down->type == BOG_ST_LITERAL){
-		printf("BOG_ST_LITERAL\n");
 		fprintf(outfileptr,"(MakeVal %s)\n",(char*)e->down->content);
 	}else if(e->down->type == BOG_ST_IF){
-		printf("BOG_ST_IF\n");
 		if_asm(outfileptr,e->down);
 	}else if(e->down->type == BOG_ST_WHILE){
-		printf("BOG_ST_WHILE\n");
 		while_asm(outfileptr,e->down);
 	}else{
 		printf("Error: Expression type not recognized!");
@@ -508,7 +492,6 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 }
 
 void if_asm(FILE* outfileptr, BOG_syntax_node* i){
-	printf("in function if_asm\n");
 	BOG_syntax_node* t = i->down;
 
 	int behind_label = label_count++;
@@ -539,7 +522,6 @@ void if_asm(FILE* outfileptr, BOG_syntax_node* i){
 }
 
 void while_asm(FILE* outfileptr, BOG_syntax_node* w){
-	printf("in function while_asm\n");
 	assert(w->type == BOG_ST_WHILE);
 
 	int start_label = label_count++;
@@ -557,7 +539,6 @@ void while_asm(FILE* outfileptr, BOG_syntax_node* w){
 }
 
 void body_asm(FILE* outfileptr, BOG_syntax_node* b){
-	printf("in function body_asm\n");
 	BOG_syntax_node* t = b->down;
 
 	while(t != NULL){
@@ -568,7 +549,6 @@ void body_asm(FILE* outfileptr, BOG_syntax_node* b){
 
 
 void output_asm(char* outfilename, BOG_syntax_node* program){
-	printf("in function output_asm\n");
 	assert(program->type == BOG_ST_PROGRAM);
 
 	FILE* outfileptr = fopen(outfilename,"w");
@@ -594,9 +574,42 @@ void parse(const char* input_file){
 
 	BOG_syntax_node* t = program();
 
-	print_BOG_syntax_node(t,0);
+	//print_BOG_syntax_node(t,0);
 
-	output_asm("asmtest",t);
+	int i=strlen(input_file)-1;
+	while(i > 0 && input_file[i] != '.') i--;
+
+	char* output_file_name;
+
+	if(i == 0){
+		output_file_name = malloc(sizeof(char)*(i+1 + 5 +1));
+		int k=0;
+		while(k < strlen(input_file)){
+			output_file_name[k] = input_file[k];
+			k++;
+		}
+		output_file_name[k++] = '.';
+		output_file_name[k++] = 'm';
+		output_file_name[k++] = 'a';
+		output_file_name[k++] = 's';
+		output_file_name[k++] = 'm';
+		output_file_name[k++] = '\0';
+	}else{
+		output_file_name = malloc(sizeof(char)*(i + 5 +1));
+		int k=0;
+		while(k < i){
+			output_file_name[k] = input_file[k];
+			k++;
+		}
+		output_file_name[k++] = '.';
+		output_file_name[k++] = 'm';
+		output_file_name[k++] = 'a';
+		output_file_name[k++] = 's';
+		output_file_name[k++] = 'm';
+		output_file_name[k++] = '\0';
+	}
+	output_asm(output_file_name,t);
+
 }
 
 
