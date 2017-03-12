@@ -3,6 +3,7 @@
 #include "BoG_Lexer.h"
 #include "BoG_Parser_util.h"
 #include "BoG_vartable.h"
+#include "BoG_stack.h"
 
 #ifdef LEXER_DEBUG
 	#define advance_over_BOG(E) advance_over_BOG(__LINE__,E)
@@ -10,6 +11,17 @@
 	#define advance() advance(__LINE__)
 	#define new_BOG_syntax_node(E) new_BOG_syntax_node(E,__LINE__)
 	#define new_BOG_syntax_node_c(E,F) new_BOG_syntax_node_c(E,F,__LINE__)
+#endif
+
+
+#ifdef BOG_STACK_DEBUG
+	#define bog_stack_top(E) bog_stack_top(E,__LINE__)
+	#define bog_stack_new() bog_stack_new(__LINE__)
+	#define bog_stack_push(E,F) bog_stack_push(E,F,__LINE__)
+	#define bog_stack_pop(E) bog_stack_pop(E,__LINE__)
+	#define bog_stack_pop_and_free(E) bog_stack_pop_and_free(E,__LINE__)
+	#define bog_stack_is_empty(E) bog_stack_is_empty(E,__LINE__)
+	#define bog_stack_delete(E) bog_stack_delete(E,__LINE__)
 #endif
 
 
@@ -35,6 +47,27 @@ void add_local_variable(BOG_syntax_node* n){
 	}else{
 		bog_vartable_put(localvar_table,(char*)n->content,localvar_count++);
 	}
+}
+
+
+int op_priority(char* opname){
+	if(!strcmp(opname,"||") || !strcmp(opname,"&&")){
+		return 0;
+	}
+
+	if(!strcmp(opname,"==") || !strcmp(opname,"!=") || !strcmp(opname,"<=") || !strcmp(opname,">=") || !strcmp(opname,"<") || !strcmp(opname,">")){
+		return 1;
+	}
+
+	if(!strcmp(opname,"+") || !strcmp(opname,"-")){
+		return 2;
+	}
+
+	if(!strcmp(opname,"*") || !strcmp(opname,"/")){
+		return 3;
+	}
+
+	return 4;
 }
 
 
@@ -219,6 +252,63 @@ BOG_syntax_node* binopexpr(){
 	BOG_syntax_node* res;
 
 	if(current_token == BOG_OPNAME){
+		BOG_stack* exp_stack = bog_stack_new();
+		BOG_stack* op_stack = bog_stack_new();
+
+		BOG_syntax_node* t = new_BOG_syntax_node(BOG_ST_EXPR);
+		t->down = first_expr;
+
+		bog_stack_push(exp_stack,t);
+		bog_stack_push(op_stack,copy_of_lexeme());
+
+		advance();
+
+		t = new_BOG_syntax_node(BOG_ST_EXPR);
+		t->down = smallexpr();
+		bog_stack_push(exp_stack,t);
+
+		while(current_token == BOG_OPNAME){
+			if(bog_stack_is_empty(op_stack) || op_priority(current_lexeme) > op_priority(bog_stack_top(op_stack))){
+				bog_stack_push(op_stack,copy_of_lexeme());
+
+				advance();
+
+				t = new_BOG_syntax_node(BOG_ST_EXPR);
+				t->down = smallexpr();
+				bog_stack_push(exp_stack,t);
+			}else{
+				t = new_BOG_syntax_node(BOG_ST_EXPR);
+				t->down = new_BOG_syntax_node_c(BOG_ST_CALL,bog_stack_pop(op_stack));
+
+				BOG_syntax_node* e2 = bog_stack_pop(exp_stack);
+				BOG_syntax_node* e1 = bog_stack_pop(exp_stack);
+
+				t->down->next = e1;
+				t->down->next->next = e2;
+
+				bog_stack_push(exp_stack,t);
+			}
+		}
+
+		while(!bog_stack_is_empty(op_stack)){
+				t = new_BOG_syntax_node(BOG_ST_EXPR);
+				t->down = new_BOG_syntax_node_c(BOG_ST_CALL,bog_stack_pop(op_stack));
+
+				BOG_syntax_node* e2 = bog_stack_pop(exp_stack);
+				BOG_syntax_node* e1 = bog_stack_pop(exp_stack);
+
+				t->down->next = e1;
+				t->down->next->next = e2;
+
+				bog_stack_push(exp_stack,t);
+		}
+
+		res = bog_stack_pop(exp_stack);
+
+
+		bog_stack_delete(exp_stack);
+		bog_stack_delete(op_stack);
+		/*
 		BOG_syntax_node* t = new_BOG_syntax_node(BOG_ST_EXPR);
 		t->down = first_expr;
 		res = t;
@@ -233,6 +323,7 @@ BOG_syntax_node* binopexpr(){
 			t->next->down = smallexpr();
 			t = t->next;
 		}
+		*/
 	}else{
 		res = first_expr;
 	}
@@ -548,12 +639,17 @@ void body_asm(FILE* outfileptr, BOG_syntax_node* b){
 }
 
 
-void output_asm(char* outfilename, BOG_syntax_node* program){
+void output_asm(char* outfilenameprefix, BOG_syntax_node* program){
 	assert(program->type == BOG_ST_PROGRAM);
+
+	char outfilename[1000];
+	outfilename[0] = '\0';
+	strcat(outfilename,outfilenameprefix);
+	strcat(outfilename,".masm");
 
 	FILE* outfileptr = fopen(outfilename,"w");
 
-	fprintf(outfileptr,"\"%s.mexe\" = main in\n!{{\n",outfilename);
+	fprintf(outfileptr,"\"%s.mexe\" = main in\n!{{\n",outfilenameprefix);
 
 	BOG_syntax_node* t = program->down;
 
@@ -574,42 +670,21 @@ void parse(const char* input_file){
 
 	BOG_syntax_node* t = program();
 
-	//print_BOG_syntax_node(t,0);
+#ifdef SYNTAX_NODE_DEBUG
+	print_BOG_syntax_node(t,0);
+#endif
 
-	int i=strlen(input_file)-1;
-	while(i > 0 && input_file[i] != '.') i--;
-
-	char* output_file_name;
+	char output_file_name_prefix[1000];
+	strcpy(output_file_name_prefix,input_file);
+	int i=strlen(input_file);
+	while(i>0 && output_file_name_prefix[i] !='.') i--;
 
 	if(i == 0){
-		output_file_name = malloc(sizeof(char)*(i+1 + 5 +1));
-		int k=0;
-		while(k < strlen(input_file)){
-			output_file_name[k] = input_file[k];
-			k++;
-		}
-		output_file_name[k++] = '.';
-		output_file_name[k++] = 'm';
-		output_file_name[k++] = 'a';
-		output_file_name[k++] = 's';
-		output_file_name[k++] = 'm';
-		output_file_name[k++] = '\0';
+		output_asm(output_file_name_prefix,t);
 	}else{
-		output_file_name = malloc(sizeof(char)*(i + 5 +1));
-		int k=0;
-		while(k < i){
-			output_file_name[k] = input_file[k];
-			k++;
-		}
-		output_file_name[k++] = '.';
-		output_file_name[k++] = 'm';
-		output_file_name[k++] = 'a';
-		output_file_name[k++] = 's';
-		output_file_name[k++] = 'm';
-		output_file_name[k++] = '\0';
+		output_file_name_prefix[i] = '\0';
+		output_asm(output_file_name_prefix,t);
 	}
-	output_asm(output_file_name,t);
-
 }
 
 

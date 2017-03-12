@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "var_array.h"
-#include "stack.c"
+#include "BoG_stack.h"
 
 int main()
 {

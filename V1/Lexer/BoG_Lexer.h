@@ -69,7 +69,13 @@ int current_lexeme_size(){
 }
 
 void write_current_lexeme_to(char* write_to){
-	strcpy(write_to,yytext);
+	strcpy(write_to,current_lexeme);
+}
+
+char* copy_of_lexeme(){
+	char* res = malloc(current_lexeme_size());
+	write_current_lexeme_to(res);
+	return res;
 }
 
 
@@ -101,7 +107,7 @@ int advance(
 		){
 #ifdef LEXER_DEBUG
 	printf("parser line %d: walking over: ", parser_line);
-	printf("%s",yytext);
+	printf("%s",current_lexeme);
 	printf("\n");
 #endif
 

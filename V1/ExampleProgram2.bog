@@ -17,19 +17,18 @@ fun ans(n){
 		f_tmp = f_last;
 		f_last = f;
 		f = f_last + f_tmp;
-		writeln(f);
 	};
 	
-	writeln("res=");
-	writeln(res);
 
 	return res;
 }
 
 
 fun main(){
-	writeln("is working!");
-	var answer = ans(4000000);
-	writeln(answer);
-	writeln("is working!");
+	var answer; 
+
+	answer = ans(4000000);
+	writeln("answer = "++answer);
+
+	return 0;
 }
