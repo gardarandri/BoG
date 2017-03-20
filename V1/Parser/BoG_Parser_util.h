@@ -64,16 +64,6 @@
 //      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
 //
 //
-//  ->  EXPR ->
-//        |
-//		EXPR -> OPNAME -> EXPR -> ... -> OPNAME -> EXPR
-//
-//
-//	->	EXPR ->
-//		  |
-//		OPNAME -> EXPR
-//
-//
 //  -> EXPR  ->
 //       |
 //    LITERAL
@@ -108,6 +98,7 @@
 
 
 
+
 typedef struct BOG_syntax_node{
 	int type;
 	void* content;
@@ -124,6 +115,19 @@ typedef struct BOG_function_info{
 	char* name;
 	int number_of_arguments;
 } BOG_function_info;
+
+// Notkun:	x = new_BOG_syntax_node(t);
+// Fyrir:	t er int tala sem vísar til einhverrar gerðar af
+// 			milliþulu hlekks.
+// Eftir:	x er nýr milliþulu hlekkur af gerðinni t.
+BOG_syntax_node* new_BOG_syntax_node(int type);
+
+// Notkun:	x = new_BOG_syntax_node_c(t,s);
+// Fyrir:	t er int tala sem vísar til einhverrar gerðar af
+// 			milliþulu hlekks, s er strengur (char*)
+// Eftir:	x er nýr milliþulu hlekkur af gerðinni t og
+// 			x.content er strengurinn s.
+BOG_syntax_node* new_BOG_syntax_node_c(int type, char* str);
 
 
 char* str_name_BOG_syntax_node(BOG_syntax_node* n){

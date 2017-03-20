@@ -308,22 +308,6 @@ BOG_syntax_node* binopexpr(){
 
 		bog_stack_delete(exp_stack);
 		bog_stack_delete(op_stack);
-		/*
-		BOG_syntax_node* t = new_BOG_syntax_node(BOG_ST_EXPR);
-		t->down = first_expr;
-		res = t;
-
-		while(current_token == BOG_OPNAME){
-			t->next = new_BOG_syntax_node_c(BOG_ST_OPNAME,current_lexeme);
-			t = t->next;
-
-			advance();
-
-			t->next = new_BOG_syntax_node(BOG_ST_EXPR);
-			t->next->down = smallexpr();
-			t = t->next;
-		}
-		*/
 	}else{
 		res = first_expr;
 	}
@@ -469,6 +453,9 @@ void while_asm(FILE* outfileptr, BOG_syntax_node* w);
 void body_asm(FILE* outfileptr, BOG_syntax_node* b);
 void output_asm(char* outfilename, BOG_syntax_node* program);
 
+//  ->   FUNCTION  ->
+//          |
+//        NAME -> NAME -> NAME -> ... -> NAME -> DECL -> DECL -> ... -> EXPR -> EXPR -> ... -> EXPR
 void function_asm(FILE* outfileptr, BOG_syntax_node* f){
 	assert(f->type == BOG_ST_FUNCTION);
 
@@ -498,6 +485,9 @@ void function_asm(FILE* outfileptr, BOG_syntax_node* f){
 	fprintf(outfileptr,"];\n");
 }
 
+//  ->   DECL   ->
+//        |
+//      NAME -> NAME -> NAME -> ... -> NAME
 void decl_asm(FILE* outfileptr, BOG_syntax_node* d){
 	assert(d->type == BOG_ST_DECL);
 
@@ -517,16 +507,28 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 	assert(e->type == BOG_ST_EXPR);
 
 	if(e->down->type == BOG_ST_RETURN){
+//  ->   EXPR   ->
+//        |
+//      RETURN -> EXPR
 		expr_asm(outfileptr,e->down->next);
 		fprintf(outfileptr,"(Return)\n");
 	}else if(e->down->type == BOG_ST_NAME){
 		if(e->down->next == NULL){
+//  ->  EXPR ->
+//        |
+//      NAME
 			fprintf(outfileptr,"(Fetch %d)\n",bog_vartable_get(localvar_table,(char*)e->down->content));
 		}else{
+//  ->   EXPR   ->
+//        |
+//      NAME -> EXPR
 			expr_asm(outfileptr,e->down->next);
 			fprintf(outfileptr,"(Store %d)\n",bog_vartable_get(localvar_table,(char*)e->down->content));
 		}
 	}else if(e->down->type == BOG_ST_CALL){
+//  ->  EXPR ->
+//        |
+//      CALL -> EXPR -> EXPR -> EXPR -> ... -> EXPR
 		BOG_syntax_node* t = e->down->next;
 
 		int parameter_count = 0;
@@ -553,28 +555,20 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 		BOG_syntax_node* t = e->down;
 
 		expr_asm(outfileptr,t);
-
-		t = t->next;
-		while(t != NULL){
-			fprintf(outfileptr,"(Push)\n");
-
-			char* opname = (char*)t->content;
-			t = t->next;
-
-			expr_asm(outfileptr,t);
-
-			fprintf(outfileptr,"(Call #\"%s[f2]\" 2)\n",opname);
-
-			t = t->next;
-		}
-	}else if(e->down->type == BOG_ST_OPNAME){
-		expr_asm(outfileptr,e->down->next);
-		fprintf(outfileptr,"(Call #\"%s[f1]\" 1)\n",(char*)e->down->content);
 	}else if(e->down->type == BOG_ST_LITERAL){
+//  -> EXPR  ->
+//       |
+//    LITERAL
 		fprintf(outfileptr,"(MakeVal %s)\n",(char*)e->down->content);
 	}else if(e->down->type == BOG_ST_IF){
+//  -> EXPR  ->
+//       |
+//      IF
 		if_asm(outfileptr,e->down);
 	}else if(e->down->type == BOG_ST_WHILE){
+//  -> EXPR  ->
+//      |
+//    WHILE
 		while_asm(outfileptr,e->down);
 	}else{
 		printf("Error: Expression type not recognized!");
@@ -583,6 +577,9 @@ void expr_asm(FILE* outfileptr, BOG_syntax_node* e){
 }
 
 void if_asm(FILE* outfileptr, BOG_syntax_node* i){
+//  -> IF  ->
+//     |
+//    EXPR -> BODY -> EXPR -> BODY -> ... -> EXPR -> BODY -> BODY
 	BOG_syntax_node* t = i->down;
 
 	int behind_label = label_count++;
@@ -613,6 +610,9 @@ void if_asm(FILE* outfileptr, BOG_syntax_node* i){
 }
 
 void while_asm(FILE* outfileptr, BOG_syntax_node* w){
+//  -> WHILE ->
+//       |
+//     EXPR -> BODY
 	assert(w->type == BOG_ST_WHILE);
 
 	int start_label = label_count++;
@@ -630,6 +630,9 @@ void while_asm(FILE* outfileptr, BOG_syntax_node* w){
 }
 
 void body_asm(FILE* outfileptr, BOG_syntax_node* b){
+//  ->  BODY  ->
+//       |
+//     EXPR -> EXPR -> ... -> EXPR
 	BOG_syntax_node* t = b->down;
 
 	while(t != NULL){

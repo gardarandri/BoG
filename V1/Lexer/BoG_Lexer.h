@@ -10,6 +10,7 @@ int current_token;
 // Breyta sem inniheldur tókið sem lesgreinirinn labbar þar næst yfir
 int next_token;
 
+// Breyta sem inniheldur lesið sem lesgreinirinn labbar næst yfir
 char current_lexeme[BOG_LEXEME_MAX_LEN];
 
 // Notkun:	throw_error(s);
@@ -64,14 +65,24 @@ int finish_lexing(){
 	return BOG_FINISHED;
 }
 
+// Notkun:	s = current_lexeme_size()
+// Fyrir:	lesgrening er í gangi.
+// Eftir:	s er stærð núverandi less í bætum.
 int current_lexeme_size(){
-	return sizeof(char) * (strlen(yytext)+1);
+	return sizeof(char) * (strlen(current_lexeme)+1);
 }
 
+// Notkun:	write_current_lexeme_to(p)
+// Fyrir:	lesgrening er í gangi, p er bendir á minnisvæði
+// 			af stærð að minnsta kosti current_lexeme_size()
+// Eftir:	búið er að afrita núverandi les í p.
 void write_current_lexeme_to(char* write_to){
 	strcpy(write_to,current_lexeme);
 }
 
+// Notkun:	x = copy_of_lexeme()
+// Fyrir:	lesgrening er í gangi.
+// Eftir:	x er nýtt afrit af núverandi lesi.
 char* copy_of_lexeme(){
 	char* res = malloc(current_lexeme_size());
 	write_current_lexeme_to(res);
